@@ -232,8 +232,8 @@ impl Node {
          id                : id.clone(),
          table             : routing::Table::new(id.clone(), configuration.clone()),
          storage           : storage::Storage::new(id, configuration.clone()),
-         inbound           : try!(net::UdpSocket::bind(("0.0.0.0", inbound_port))),
-         outbound          : try!(net::UdpSocket::bind(("0.0.0.0", outbound_port))),
+         inbound           : net::UdpSocket::bind(("0.0.0.0", inbound_port)).unwrap(),
+         outbound          : net::UdpSocket::bind(("0.0.0.0", outbound_port)).unwrap(),
          state             : sync::RwLock::new(State::OffGrid),
          reception_updates : sync::Mutex::new(bus::Bus::new(UPDATE_BUS_SIZE_BYTES)),
          network_updates   : sync::Mutex::new(bus::Bus::new(UPDATE_BUS_SIZE_BYTES)),
@@ -244,7 +244,7 @@ impl Node {
 
       resources.table.update_node(resources.local_info());
 
-      try!(resources.inbound.set_read_timeout(Some(StdDuration::from_millis(SOCKET_TIMEOUT_MS))));
+      resources.inbound.set_read_timeout(Some(StdDuration::from_millis(SOCKET_TIMEOUT_MS)));
 
       let reception_resources = resources.clone();
       thread::spawn(move || { Node::reception_loop(reception_resources) });
@@ -272,7 +272,7 @@ impl Node {
          }
 
          if let Ok((_, source)) = message {
-            if let Ok(rpc) = rpc::Rpc::deserialize(&buffer) {
+            if let Some(rpc) = rpc::Rpc::deserialize(&buffer) {
                let resources_clone = resources.clone();
                thread::spawn(move || { resources_clone.process_incoming_rpc(rpc, source) } );
             }

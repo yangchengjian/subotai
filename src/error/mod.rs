@@ -1,7 +1,6 @@
 use std::result;
 use std::io;
 use std::fmt;
-use bincode::serde;
 use std::error::Error;
 
 /// Subotai error type. It reports the various ways in which a hash table query may fail.
@@ -21,7 +20,7 @@ pub enum SubotaiError {
    /// The network is unresponsive (several RPCs have timed out).
    UnresponsiveNetwork,
    Io(io::Error),
-   Deserialize(serde::DeserializeError),
+   Deserialize,
 }
 
 /// Custom result type over `SubotaiError`.
@@ -37,7 +36,7 @@ impl fmt::Display for SubotaiError {
          SubotaiError::StorageError => write!(f, "Corrupted Storage."),
          SubotaiError::UnresponsiveNetwork => write!(f, "Network too small or unresponsive."),
          SubotaiError::Io(ref err) => err.fmt(f),
-         SubotaiError::Deserialize(ref err) => err.fmt(f),
+         SubotaiError::Deserialize => write!(f, "Last error."),
       }
    }
 }
@@ -52,14 +51,14 @@ impl Error for SubotaiError {
          SubotaiError::StorageError => "Corrupted Storage.",
          SubotaiError::UnresponsiveNetwork => "Network too small or unresponsive.",
          SubotaiError::Io(ref err) => err.description(),
-         SubotaiError::Deserialize(ref err) => err.description(),
+         SubotaiError::Deserialize => "Last error.",
       }
    }
 
    fn cause(&self) -> Option<&Error> {
       match *self {
          SubotaiError::Io(ref err) => Some(err),
-         SubotaiError::Deserialize(ref err) => Some(err),
+//         SubotaiError::Deserialize => Some("Last error."),
          _ => None,
       }
    }
@@ -71,8 +70,8 @@ impl From<io::Error> for SubotaiError {
    }
 }
 
-impl From<serde::DeserializeError> for SubotaiError {
-   fn from(err: serde::DeserializeError) -> SubotaiError {
-      SubotaiError::Deserialize(err)
-   }
-}
+//impl From<serde::Deserializer> for SubotaiError {
+//   fn from(err: serde::Deserializer) -> SubotaiError {
+//      SubotaiError::Deserialize
+//   }
+//}

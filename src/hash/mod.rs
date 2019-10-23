@@ -7,6 +7,7 @@
 //! which can then be used as a key for a storage entry.
 use rand::{thread_rng, Rng};
 use itertools;
+use serde::{Serialize, Deserialize};
 use std::ops::BitXor;
 use std::fmt;
 use std::fmt::Write;
@@ -16,7 +17,7 @@ use sha1;
 pub const HASH_SIZE : usize = 160;
 pub const HASH_SIZE_BYTES : usize = HASH_SIZE / 8;
 
-/// Subotai hash, a light wrapper over a little endian `HASH_SIZE` bit hash.
+/// Subotai hash, a light wrapper over a li  ttle endian `HASH_SIZE` bit hash.
 /// It can be generated randomly or via sha-1 of a given string.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct SubotaiHash {
@@ -32,7 +33,7 @@ impl SubotaiHash {
    /// Generates a random hash via kernel supplied entropy.
    pub fn random() -> SubotaiHash {
       let mut hash = SubotaiHash::blank();
-      thread_rng().fill_bytes(&mut hash.raw);
+//      thread_rng().fill_bytes(&mut hash.raw);
       hash
    }
 
