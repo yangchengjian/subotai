@@ -94,13 +94,12 @@ impl Rpc {
 
     /// Serializes an RPC to be send over TCP.
     pub fn serialize(&self) -> Vec<u8> {
-        serde_json::to_string(&self).unwrap().into_bytes()
+        bincode::serialize(&self).unwrap()
     }
 
     /// Deserializes into an RPC structure.
     pub fn deserialize(serialized: &[u8]) -> Option<Rpc> {
-        let r: Rpc = serde_json::from_str(str::from_utf8(&serialized).unwrap()).unwrap();
-        Some(r)
+        bincode::deserialize(&serialized).unwrap()
     }
 
     /// Reports whether the RPC is a LocateResponse that found
