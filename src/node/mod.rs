@@ -26,6 +26,7 @@ mod factory;
 
 use {storage, routing, rpc, bus, SubotaiResult, time};
 use hash::SubotaiHash;
+use log::{debug, info, warn};
 use std::{net, thread, sync};
 use std::time::Duration as StdDuration;
 
@@ -42,7 +43,7 @@ const BOOTSTRAP_TRIES : u32 = 3;
 
 /// Subotai node. 
 pub struct Node {
-   resources: sync::Arc<resources::Resources>,
+   pub resources: sync::Arc<resources::Resources>,
 }
 
 /// State of a Subotai node. 
@@ -267,6 +268,7 @@ impl Node {
 
       loop {
          let message = resources.inbound.recv_from(&mut buffer);
+         debug!("received message: {:?}", &message);
          if let State::ShuttingDown = resources.state() {
             break;
          }

@@ -28,6 +28,7 @@ extern crate itertools;
 extern crate rand;
 extern crate bincode;
 extern crate bus;
+extern crate log;
 extern crate time;
 #[macro_use]
 extern crate serde;
